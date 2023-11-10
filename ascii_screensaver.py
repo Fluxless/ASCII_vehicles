@@ -382,7 +382,7 @@ def print_car(vehicle, color="#000000"):
         terminal_size = shutil.get_terminal_size()
         terminal_width = shutil.get_terminal_size().columns
         trim_val = 0
-        for i in range(60000):
+        for i in range(400):
             clear_screen()
             n += 1
 
@@ -398,19 +398,12 @@ def print_car(vehicle, color="#000000"):
                     print(trimmed_line)
 
             total_len = len(spaces) + max_line_length - trim_val
-            time.sleep(0.05)
+            time.sleep(0.001)
             if trim_val >= max_line_length:
                 clear_screen()
                 break
             elif total_len > terminal_width:
                 trim_val += 1
-
-#car lines is a list - So it needs to work like this
-
-## When the car reaches the edge of the screen it needs to somehow work out which lines are hitting the edge of the terminal
-## Then it needs to trim one character per frame from the end of that line, as the spaces are added. But this has to be calculated for each line separately, instead of the max line like we're doing now. 
-## Then it needs to calculate when the vehicle object has been fully trimmed. So like...for that we can use max. When trim_value = max_line_length or something, would be the new break condition.
-
 
 
 def print_car_reverse(vehicle, color="#000000"):
@@ -431,8 +424,7 @@ def print_car_reverse(vehicle, color="#000000"):
     max_line_length = max(len(line) for line in car_lines)
     terminal_width = shutil.get_terminal_size().columns
     n = terminal_width-max_line_length 
-
-    for i in range(60000):  # Number of animation frames
+    for i in range(400):  # Number of animation frames
         clear_screen()
         n -= 1
         if n < 0:
@@ -440,12 +432,26 @@ def print_car_reverse(vehicle, color="#000000"):
         for j in range(len(car_lines)):
             spaces = " " * n
             print(spaces + car_lines[j])
-        time.sleep(0.05) #Animation speed
-
+        time.sleep(0.001) #Animation speed
         if n == 0:
-            clear_screen()
+            initial_color = colored_text
+            for _ in range(max_line_length):
+                clear_screen()
+                car_lines = [line[1:] for line in car_lines]
+                for j in range(len(car_lines)):
+                    spaces = " " * n
+                    print(initial_color + spaces + car_lines[j].rstrip())  # Use rstrip to remove trailing whitespace
+                
+                # Check if the last non-whitespace character of the longest line is still visible
+                last_visible_chars = [line.rstrip()[-1] for line in car_lines if len(line.rstrip()) > 0]
+                if not any(last_visible_chars):
+                    break
+
+                time.sleep(0.001)
             break
 
+            # clear_screen()
+            # break
 
 
 
